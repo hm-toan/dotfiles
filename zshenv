@@ -19,9 +19,9 @@ if [[ -d $HOME/.local/bin ]]; then
 fi
 
 function load-nvm() {
-    export NVM_DIR="$HOME/.config/nvm"
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
+    [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
 }
 
 typeset -U manpath
@@ -61,6 +61,37 @@ fi
 
 if [ -d "$HOME/.asdf" ]; then
     path_append=( $path_append ${ASDF_DATA_DIR:-$HOME/.asdf}/shims )
+fi
+
+# Ruby (Homebrew)
+if [[ -d /opt/homebrew/opt/ruby/bin ]]; then
+    path_prepend=( /opt/homebrew/opt/ruby/bin $path_prepend )
+fi
+
+# Android SDK
+if [[ -d $HOME/Library/Android/sdk ]]; then
+    export ANDROID_HOME=$HOME/Library/Android/sdk
+    path_append=( $path_append $ANDROID_HOME/emulator $ANDROID_HOME/platform-tools )
+fi
+
+# Flutter pub cache
+if [[ -d $HOME/.pub-cache/bin ]]; then
+    path_append=( $path_append $HOME/.pub-cache/bin )
+fi
+
+# FVM Flutter
+if [[ -d $HOME/fvm/default/bin ]]; then
+    path_append=( $path_append $HOME/fvm/default/bin )
+fi
+
+# CoPaw
+if [[ -d $HOME/.copaw/bin ]]; then
+    path_append=( $path_append $HOME/.copaw/bin )
+fi
+
+# opencode
+if [[ -d $HOME/.opencode/bin ]]; then
+    path_append=( $path_append $HOME/.opencode/bin )
 fi
 
 export GOPATH=$HOME/go

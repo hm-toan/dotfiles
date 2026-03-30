@@ -37,6 +37,7 @@ plugins=(
     git \
     vi-mode \
     zsh-syntax-highlighting \
+    zsh-autosuggestions \
     thxph-fzf \
     thanh)
 if uname | grep Darwin >> /dev/null; then
@@ -63,3 +64,11 @@ source $ZSH/oh-my-zsh.sh
 
 # Added by Antigravity
 export PATH="/Users/thxph/.antigravity/antigravity/bin:$PATH"
+
+#alias flutter="fvm flutter"
+#alias dart="fvm dart"
+
+# OpenClaw Completion
+if [[ -f "$HOME/.openclaw/completions/openclaw.zsh" ]]; then
+    source "$HOME/.openclaw/completions/openclaw.zsh"
+fi
