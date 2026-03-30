@@ -62,8 +62,10 @@ source $ZSH/oh-my-zsh.sh
 #[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 #[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-# Added by Antigravity
-export PATH="/Users/thxph/.antigravity/antigravity/bin:$PATH"
+# Antigravity
+if [[ -d "$HOME/.antigravity/antigravity/bin" ]]; then
+    export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
+fi
 
 #alias flutter="fvm flutter"
 #alias dart="fvm dart"

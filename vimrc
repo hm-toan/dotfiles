@@ -264,3 +264,6 @@ autocmd Filetype go command! -bang AT call go#alternate#Switch(<bang>0, 'tabe')
 let g:go_auto_type_info = 1
 let g:go_auto_sameids = 1
 
+
+" auto-sync with macos clipboard
+set clipboard=unnamedplus
