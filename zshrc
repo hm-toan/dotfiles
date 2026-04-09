@@ -7,6 +7,7 @@ export ZSH=$HOME/.oh-my-zsh
 # time that oh-my-zsh is loaded.
 export ZSH_THEME="tessa"
 
+
 # Set to this to use case-sensitive completion
 # export CASE_SENSITIVE="true"
 
@@ -52,9 +53,6 @@ fi
 
 source $ZSH/oh-my-zsh.sh
 
-# Customize to your needs...
-#export PATH=/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/texbin:/usr/X11/bin
-
 #zprof
 
 # use load-nvm() instead of this
@@ -67,8 +65,23 @@ if [[ -d "$HOME/.antigravity/antigravity/bin" ]]; then
     export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
 fi
 
-#alias flutter="fvm flutter"
-#alias dart="fvm dart"
+alias f='fvm flutter'
+alias d='fvm dart'
+
+alias jenv_set_java_home='export JAVA_HOME="$HOME/.jenv/versions/`jenv version-name`"'
+
+## [Completion]
+## Completion scripts setup. Remove the following line to uninstall
+[[ -f $HOME/.dart-cli-completion/zsh-config.zsh ]] && . $HOME/.dart-cli-completion/zsh-config.zsh || true
+## [/Completion]
+
+[[ "$TERM_PROGRAM" == "kiro" ]] && . "$(kiro --locate-shell-integration-path zsh)"
+
+export CLOUDSDK_PYTHON="/opt/homebrew/bin/python3"
+
+alias unplug='killall -9 adb CoreSimulatorService java 2>/dev/null; diskutil eject /Volumes/Data'
+alias drive-off='killall -9 adb CoreSimulatorService java 2>/dev/null; diskutil eject /dev/disk6'
+alias drive-on='diskutil mountDisk /dev/disk6'
 
 # OpenClaw Completion
 if [[ -f "$HOME/.openclaw/completions/openclaw.zsh" ]]; then

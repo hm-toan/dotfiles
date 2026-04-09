@@ -18,8 +18,31 @@ if [[ -d $HOME/.local/bin ]]; then
     path=( $path $HOME/.local/bin )
 fi
 
+# Fast path: resolve nvm default alias → actual version dir and inject into PATH.
+# Works in non-interactive shells (hooks, scripts) where `load-nvm` is not called.
+export NVM_DIR="$HOME/.nvm"
+if [ -d "$NVM_DIR/versions/node" ]; then
+    _nvm_alias=$(cat "$NVM_DIR/alias/default" 2>/dev/null)
+    if [ -n "$_nvm_alias" ]; then
+        # Handle lts/* aliases (e.g. lts/iron → read lts/iron alias file)
+        if [[ "$_nvm_alias" == lts/* ]]; then
+            _nvm_alias=$(cat "$NVM_DIR/alias/$_nvm_alias" 2>/dev/null | tr -d '[:space:]')
+        fi
+        # Match "v22" → "v22.22.2" (longest matching version wins)
+        _nvm_version=$(ls -1 "$NVM_DIR/versions/node" 2>/dev/null \
+            | grep "^${_nvm_alias}\." \
+            | sort -t. -k1,1V -k2,2n -k3,3n \
+            | tail -1)
+        # Exact match fallback (alias already is a full version)
+        [ -z "$_nvm_version" ] && _nvm_version="$_nvm_alias"
+        if [ -d "$NVM_DIR/versions/node/$_nvm_version/bin" ]; then
+            path_prepend=( "$NVM_DIR/versions/node/$_nvm_version/bin" $path_prepend )
+            export NVM_BIN="$NVM_DIR/versions/node/$_nvm_version/bin"
+        fi
+    fi
+fi
+
 function load-nvm() {
-    export NVM_DIR="$HOME/.nvm"
     [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
     [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
 }
@@ -94,8 +117,14 @@ if [[ -d $HOME/.opencode/bin ]]; then
     path_append=( $path_append $HOME/.opencode/bin )
 fi
 
+# Antigravity
+if [[ -d $HOME/.antigravity/antigravity/bin ]]; then
+    path_append=( $path_append $HOME/.antigravity/antigravity/bin )
+fi
+
 export GOPATH=$HOME/go
 path=( $path_prepend $path $path_append $HOME/go/bin $HOME/.local/bin $HOME/wip/bin $HOME/bin . )
+
 typeset -U path
 
 export path_prepend
@@ -108,4 +137,6 @@ if [ -f "$HOME/.cargo/env" ]; then
     . "$HOME/.cargo/env"
 fi
 
-export PATH="/Users/thxph/src/thxph/flutter/bin:$PATH"
+if [[ -d "$HOME/src/thxph/flutter/bin" ]]; then
+    path_append=( $path_append "$HOME/src/thxph/flutter/bin" )
+fi
