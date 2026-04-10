@@ -87,3 +87,10 @@ alias drive-on='diskutil mountDisk /dev/disk6'
 if [[ -f "$HOME/.openclaw/completions/openclaw.zsh" ]]; then
     source "$HOME/.openclaw/completions/openclaw.zsh"
 fi
+
+# bun completions
+[ -s "/Users/toan/.bun/_bun" ] && source "/Users/toan/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
