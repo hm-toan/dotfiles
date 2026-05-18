@@ -13,3 +13,6 @@
 [submodule "oh-my-zsh-custom/custom/plugins/zsh-histdb-fzf"]
 	path = oh-my-zsh-custom/custom/plugins/zsh-histdb-fzf
 	url = git@github.com:thxph/zsh-histdb-fzf.git
+[submodule "oh-my-zsh-custom/custom/plugins/zsh-autosuggestions"]
+	path = oh-my-zsh-custom/custom/plugins/zsh-autosuggestions
+	url = https://github.com/zsh-users/zsh-autosuggestions.git
