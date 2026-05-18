@@ -36,11 +36,10 @@ plugins=(
     extract \
     python \
     git \
-    vi-mode \
-    zsh-syntax-highlighting \
-    zsh-autosuggestions \
     thxph-fzf \
-    thanh)
+    thanh \
+    zsh-autosuggestions \
+    zsh-syntax-highlighting)
 if uname | grep Darwin >> /dev/null; then
     plugins+=(macos)
 elif uname | grep Linux >> /dev/null; then
@@ -52,6 +51,9 @@ if [ -f $HOME/.zshrc-tlocal ]; then
 fi
 
 source $ZSH/oh-my-zsh.sh
+
+# Vi-mode keys (raw bindkey, avoids oh-my-zsh vi-mode wrap recursion)
+bindkey -v
 
 #zprof
 
@@ -85,8 +87,27 @@ if [[ -f "$HOME/.openclaw/completions/openclaw.zsh" ]]; then
     source "$HOME/.openclaw/completions/openclaw.zsh"
 fi
 
+# QwenPaw
+export PATH="$HOME/.qwenpaw/bin:$PATH"
+
+# pnpm
+export PNPM_HOME="/Users/toan/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME/bin:"*) ;;
+  *) export PATH="$PNPM_HOME/bin:$PATH" ;;
+esac
+# pnpm end
+
+# Claude Code multi-account
+alias claude='CLAUDE_CONFIG_DIR="$HOME/.claude" command claude'
+alias claude-b3='CLAUDE_CONFIG_DIR="$HOME/.claude-b3" command claude'
+
 # bun completions
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
 
 # direnv
 command -v direnv >/dev/null 2>&1 && eval "$(direnv hook zsh)"
