@@ -60,9 +60,8 @@ source $ZSH/oh-my-zsh.sh
 #[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 #[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-# Antigravity
-if [[ -d "$HOME/.antigravity/antigravity/bin" ]]; then
-    export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
+if uname | grep -q Darwin; then
+    bindkey "\e[3~" delete-char
 fi
 
 alias f='fvm flutter'
@@ -75,9 +74,7 @@ alias jenv_set_java_home='export JAVA_HOME="$HOME/.jenv/versions/`jenv version-n
 [[ -f $HOME/.dart-cli-completion/zsh-config.zsh ]] && . $HOME/.dart-cli-completion/zsh-config.zsh || true
 ## [/Completion]
 
-[[ "$TERM_PROGRAM" == "kiro" ]] && . "$(kiro --locate-shell-integration-path zsh)"
-
-export CLOUDSDK_PYTHON="/opt/homebrew/bin/python3"
+[[ "$TERM_PROGRAM" == "kiro" ]] && command -v kiro >/dev/null 2>&1 && . "$(kiro --locate-shell-integration-path zsh)"
 
 alias unplug='killall -9 adb CoreSimulatorService java 2>/dev/null; diskutil eject /Volumes/Data'
 alias drive-off='killall -9 adb CoreSimulatorService java 2>/dev/null; diskutil eject /dev/disk6'
@@ -89,8 +86,7 @@ if [[ -f "$HOME/.openclaw/completions/openclaw.zsh" ]]; then
 fi
 
 # bun completions
-[ -s "/Users/toan/.bun/_bun" ] && source "/Users/toan/.bun/_bun"
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
-# bun
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
+# direnv
+command -v direnv >/dev/null 2>&1 && eval "$(direnv hook zsh)"

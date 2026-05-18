@@ -43,14 +43,22 @@ if [ -d "$NVM_DIR/versions/node" ]; then
 fi
 
 function load-nvm() {
-    [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
-    [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
+    local nvm_prefix
+    for nvm_prefix in /opt/homebrew/opt/nvm /usr/local/opt/nvm "$HOME/.nvm"; do
+        if [ -s "$nvm_prefix/nvm.sh" ]; then
+            \. "$nvm_prefix/nvm.sh"
+            [ -s "$nvm_prefix/etc/bash_completion.d/nvm" ] && \. "$nvm_prefix/etc/bash_completion.d/nvm"
+            [ -s "$nvm_prefix/bash_completion" ] && \. "$nvm_prefix/bash_completion"
+            return 0
+        fi
+    done
+    return 1
 }
 
 typeset -U manpath
 manpath=( $manpath )
 
-export EDITOR=`which ex`
+export EDITOR=$(command -v ex || command -v vi || command -v nano)
 export CLICOLOR=1
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
@@ -68,10 +76,10 @@ setopt dotglob
 # for OS X
 if uname | grep Darwin >> /dev/null; then
     # env for stuff installed by macports
-    export TERMINFO=/opt/local/share/terminfo
-    manpath=(/opt/local/man /usr/local/man $manpath)
+    [[ -d /opt/local/share/terminfo ]] && export TERMINFO=/opt/local/share/terminfo
+    [[ -d /opt/local/man ]] && manpath=(/opt/local/man $manpath)
+    [[ -d /usr/local/man ]] && manpath=(/usr/local/man $manpath)
     cdpath=($cdpath ~/Documents)
-    bindkey "\e[3~" delete-char
 elif uname | grep Linux >> /dev/null; then
     export XDG_CONFIG_HOME="$HOME/.config"
 fi
@@ -131,7 +139,7 @@ export path_prepend
 export path_append
 
 # use nvim
-export VISUAL=`which nvim`
+export VISUAL=$(command -v nvim || command -v vim || command -v vi)
 
 if [ -f "$HOME/.cargo/env" ]; then
     . "$HOME/.cargo/env"
@@ -140,3 +148,29 @@ fi
 if [[ -d "$HOME/src/thxph/flutter/bin" ]]; then
     path_append=( $path_append "$HOME/src/thxph/flutter/bin" )
 fi
+
+# bun
+if [[ -d "$HOME/.bun/bin" ]]; then
+    export BUN_INSTALL="$HOME/.bun"
+    path_prepend=( "$BUN_INSTALL/bin" $path_prepend )
+fi
+
+# pnpm
+if [[ -d "$HOME/Library/pnpm" ]]; then
+    export PNPM_HOME="$HOME/Library/pnpm"
+    path_prepend=( "$PNPM_HOME" $path_prepend )
+elif [[ -d "$HOME/.local/share/pnpm" ]]; then
+    export PNPM_HOME="$HOME/.local/share/pnpm"
+    path_prepend=( "$PNPM_HOME" $path_prepend )
+fi
+
+# gcloud python (detect homebrew prefix)
+if [[ -x /opt/homebrew/bin/python3 ]]; then
+    export CLOUDSDK_PYTHON=/opt/homebrew/bin/python3
+elif [[ -x /usr/local/bin/python3 ]]; then
+    export CLOUDSDK_PYTHON=/usr/local/bin/python3
+fi
+
+# rebuild path after appended/prepended entries
+path=( $path_prepend $path $path_append )
+typeset -U path
