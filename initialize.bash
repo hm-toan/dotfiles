@@ -150,18 +150,34 @@ stepInstallStuff () {
         pamac install sqlite3 neovim tmux
         nvim +PlugInstall +qa
     elif uname -a | grep -iq darwin > /dev/null; then
-        if [ -f /usr/local/bin/brew ]; then
+        # Detect brew on both Intel (/usr/local) and Apple Silicon (/opt/homebrew).
+        if command -v brew > /dev/null; then
             brew install python curl neovim wget python3 tmux zsh git reattach-to-user-namespace highlight tree
-            pipx install git+git://github.com/powerline/powerline
             pipx install psutil
             pipx install neovim
-            if grep -iq '/usr/local/bin/zsh' /etc/shells; then
-                printf "    \033[1;34;49m /usr/local/bin/zsh is already in /etc/shells\033[0m\n"
+            brew_zsh="$(brew --prefix)/bin/zsh"
+            if grep -iqF "$brew_zsh" /etc/shells; then
+                printf "    \033[1;34;49m $brew_zsh is already in /etc/shells\033[0m\n"
             else
                 printf "    \033[1;34;49m Adding homebrew's zsh to /etc/shells\n\033[0m"
-                sudo sh -c 'echo "/usr/local/bin/zsh" >> /etc/shells'
+                sudo sh -c "echo \"$brew_zsh\" >> /etc/shells"
             fi
-            find /usr/local -iregex '.*tmux/powerline.conf' 2> /dev/null -print0 | xargs -0 -I % ln -sfv % $HOME/.powerline-tmux.conf
+        fi
+        # tmux-powerline: standalone shell engine, no TPM and no `prefix + I` needed.
+        echo 'Installing tmux-powerline'
+        tp_dir="$here/tmux/plugins/tmux-powerline"
+        if [ -d "$tp_dir/.git" ]; then
+            (cd "$tp_dir" && git pull --ff-only) || true
+        else
+            mkdir -p "$here/tmux/plugins"
+            git clone --depth 1 https://github.com/erikw/tmux-powerline.git "$tp_dir"
+        fi
+        mkdir -p "$HOME/.config/tmux-powerline/themes"
+        ln -sfv "$here/tmux/tmux-powerline/themes/thxph.sh" "$HOME/.config/tmux-powerline/themes/thxph.sh"
+        if [ ! -f "$HOME/.config/tmux-powerline/config.sh" ]; then
+            "$tp_dir/generate_config.sh"
+            mv "$HOME/.config/tmux-powerline/config.sh.default" "$HOME/.config/tmux-powerline/config.sh"
+            sed -i '' 's/export TMUX_POWERLINE_THEME="default"/export TMUX_POWERLINE_THEME="thxph"/' "$HOME/.config/tmux-powerline/config.sh"
         fi
     fi
 }
