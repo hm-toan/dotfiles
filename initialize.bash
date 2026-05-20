@@ -46,12 +46,12 @@ chkln () {
 confirmYn () {
     printf "$1"" (Y/n)"
     read -n 1 a
-    while [[ ! $a == "Y" && ! $a == "n" ]]; do
+    while [[ ! $a =~ ^[YyNn]$ ]]; do
         printf "\nPlease answer (Y/n)"
         read -n 1 a
     done
     echo ''
-    if [[ $a == "Y" ]]; then
+    if [[ $a == "Y" || $a == "y" ]]; then
         $2
     fi
 }
@@ -152,32 +152,52 @@ stepInstallStuff () {
     elif uname -a | grep -iq darwin > /dev/null; then
         # Detect brew on both Intel (/usr/local) and Apple Silicon (/opt/homebrew).
         if command -v brew > /dev/null; then
-            brew install python curl neovim wget python3 tmux zsh git reattach-to-user-namespace highlight tree
-            pipx install psutil
-            pipx install neovim
-            brew_zsh="$(brew --prefix)/bin/zsh"
-            if grep -iqF "$brew_zsh" /etc/shells; then
-                printf "    \033[1;34;49m $brew_zsh is already in /etc/shells\033[0m\n"
+            stepInstallBrewPkgs () {
+                brew install python curl neovim wget python3 tmux zsh git reattach-to-user-namespace highlight tree || true
+                pipx install psutil || true
+                pipx install neovim || true
+                brew_zsh="$(brew --prefix)/bin/zsh"
+                if grep -iqF "$brew_zsh" /etc/shells; then
+                    printf "    \033[1;34;49m $brew_zsh is already in /etc/shells\033[0m\n"
+                else
+                    printf "    \033[1;34;49m Adding homebrew's zsh to /etc/shells\n\033[0m"
+                    sudo sh -c "echo \"$brew_zsh\" >> /etc/shells"
+                fi
+            }
+            confirmYn "\033[1;32;49m=== Install/upgrade brew packages (python, tmux, zsh, neovim, ...):\033[0m" stepInstallBrewPkgs
+
+            stepInstallNerdFonts () {
+                brew install --cask font-jetbrains-mono-nerd-font font-powerline-symbols || true
+            }
+            if ! brew list --cask font-jetbrains-mono-nerd-font > /dev/null 2>&1; then
+                confirmYn "\033[1;32;49m=== Install Nerd Fonts (JetBrainsMono + powerline-symbols):\033[0m" stepInstallNerdFonts
             else
-                printf "    \033[1;34;49m Adding homebrew's zsh to /etc/shells\n\033[0m"
-                sudo sh -c "echo \"$brew_zsh\" >> /etc/shells"
+                echo "Nerd Font already installed, skipping."
             fi
         fi
-        # tmux-powerline: standalone shell engine, no TPM and no `prefix + I` needed.
-        echo 'Installing tmux-powerline'
-        tp_dir="$here/tmux/plugins/tmux-powerline"
-        if [ -d "$tp_dir/.git" ]; then
-            (cd "$tp_dir" && git pull --ff-only) || true
+
+        stepInstallTmuxPowerline () {
+            # tmux-powerline: standalone shell engine, no TPM and no `prefix + I` needed.
+            echo 'Installing tmux-powerline'
+            tp_dir="$here/tmux/plugins/tmux-powerline"
+            if [ -d "$tp_dir/.git" ]; then
+                (cd "$tp_dir" && git pull --ff-only) || true
+            else
+                mkdir -p "$here/tmux/plugins"
+                git clone --depth 1 https://github.com/erikw/tmux-powerline.git "$tp_dir"
+            fi
+            mkdir -p "$HOME/.config/tmux-powerline/themes"
+            ln -sfv "$here/tmux/tmux-powerline/themes/thxph.sh" "$HOME/.config/tmux-powerline/themes/thxph.sh"
+            if [ ! -f "$HOME/.config/tmux-powerline/config.sh" ]; then
+                "$tp_dir/generate_config.sh"
+                mv "$HOME/.config/tmux-powerline/config.sh.default" "$HOME/.config/tmux-powerline/config.sh"
+                sed -i '' 's/export TMUX_POWERLINE_THEME="default"/export TMUX_POWERLINE_THEME="thxph"/' "$HOME/.config/tmux-powerline/config.sh"
+            fi
+        }
+        if [ ! -f "$here/tmux/plugins/tmux-powerline/main.tmux" ] || [ ! -f "$HOME/.config/tmux-powerline/config.sh" ]; then
+            confirmYn "\033[1;32;49m=== Install tmux-powerline (status bar plugin):\033[0m" stepInstallTmuxPowerline
         else
-            mkdir -p "$here/tmux/plugins"
-            git clone --depth 1 https://github.com/erikw/tmux-powerline.git "$tp_dir"
-        fi
-        mkdir -p "$HOME/.config/tmux-powerline/themes"
-        ln -sfv "$here/tmux/tmux-powerline/themes/thxph.sh" "$HOME/.config/tmux-powerline/themes/thxph.sh"
-        if [ ! -f "$HOME/.config/tmux-powerline/config.sh" ]; then
-            "$tp_dir/generate_config.sh"
-            mv "$HOME/.config/tmux-powerline/config.sh.default" "$HOME/.config/tmux-powerline/config.sh"
-            sed -i '' 's/export TMUX_POWERLINE_THEME="default"/export TMUX_POWERLINE_THEME="thxph"/' "$HOME/.config/tmux-powerline/config.sh"
+            echo "tmux-powerline already installed, skipping."
         fi
     fi
 }
