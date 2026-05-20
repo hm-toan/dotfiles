@@ -27,3 +27,5 @@
 [user]
 	email = minhtoanho@gmail.com
 	name = toanho
+[include]
+	path = ~/.gitconfig-local
