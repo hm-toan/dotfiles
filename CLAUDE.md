@@ -99,6 +99,17 @@ This is a comprehensive dotfiles repository for Unix-like systems (Linux and mac
 - Create new plugins in `oh-my-zsh-custom/custom/plugins/`
 - Modify theme in `oh-my-zsh-custom/themes/tessa.zsh-theme`
 
+## Public Repository — Security Rules (MANDATORY)
+
+This repository is **public**. Treat every tracked file as world-readable forever.
+
+- **Never commit secrets or employer/work-identifying info** into tracked files: no API keys, tokens, passwords, work email addresses, employer or client names, internal hostnames, or private repo paths.
+- **Work git identities stay local-only.** They live in untracked files under `$HOME` (outside this repo): a generic `~/.gitconfig-local` that the tracked `gitconfig` pulls in via a plain `[include]`, plus the per-context identity files it references. Do **not** track those files, and do **not** put their work-revealing names, emails, or `gitdir` conditions into any tracked file.
+- The tracked `gitconfig` must contain **no** `[includeIf]` blocks for work directories — only the generic `[include] path = ~/.gitconfig-local`.
+- Local-only / machine-specific config belongs in untracked files (e.g. `~/.gitconfig-local`, `~/.zshrc-tlocal`, `~/.gitconfigp`), never in tracked dotfiles.
+- **Before staging:** scan the diff for emails, tokens, and employer/client names. If anything matches, stop and move it to an untracked local file.
+- **Never rewrite history or force-push** without an explicit, in-the-moment request.
+
 ## Important Notes
 
 - The repository uses git submodules (oh-my-zsh)
