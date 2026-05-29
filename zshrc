@@ -111,3 +111,9 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 
 # direnv
 command -v direnv >/dev/null 2>&1 && eval "$(direnv hook zsh)"
+
+# local bin (guard against duplicate entries)
+case ":$PATH:" in
+  *":$HOME/.local/bin:"*) ;;
+  *) export PATH="$HOME/.local/bin:$PATH" ;;
+esac
