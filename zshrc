@@ -98,10 +98,6 @@ case ":$PATH:" in
 esac
 # pnpm end
 
-# Claude Code multi-account
-alias claude='CLAUDE_CONFIG_DIR="$HOME/.claude" command claude'
-alias claude-b3='CLAUDE_CONFIG_DIR="$HOME/.claude-b3" command claude'
-
 # bun completions
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
