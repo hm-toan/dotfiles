@@ -111,6 +111,9 @@ if [[ -d $HOME/.pub-cache/bin ]]; then
 fi
 
 # FVM Flutter
+if [[ -d $HOME/fvm/bin ]]; then
+    path_append=( $path_append $HOME/fvm/bin )
+fi
 if [[ -d $HOME/fvm/default/bin ]]; then
     path_append=( $path_append $HOME/fvm/default/bin )
 fi
@@ -131,7 +134,7 @@ if [[ -d $HOME/.antigravity/antigravity/bin ]]; then
 fi
 
 export GOPATH=$HOME/go
-path=( $path_prepend $path $path_append $HOME/go/bin $HOME/.local/bin $HOME/wip/bin $HOME/bin . )
+path=( $path_prepend $path $path_append $HOME/go/bin $HOME/.local/bin $HOME/wip/bin $HOME/bin )
 
 typeset -U path
 
