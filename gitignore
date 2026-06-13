@@ -31,3 +31,7 @@ tessa.zsh-theme
 vim/bundle/*
 vim/plugged/*
 /.idea/
+
+# Claude / AI dev tools (local-only, never commit)
+CLAUDE.local.md
+.claude/
