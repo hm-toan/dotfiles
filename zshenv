@@ -99,6 +99,12 @@ if [[ -d /opt/homebrew/opt/ruby/bin ]]; then
     path_prepend=( /opt/homebrew/opt/ruby/bin $path_prepend )
 fi
 
+# Java (Homebrew openjdk@17 — Flutter/Android Gradle toolchain)
+if [[ -d /opt/homebrew/opt/openjdk@17 ]]; then
+    export JAVA_HOME=/opt/homebrew/opt/openjdk@17
+    path_prepend=( $JAVA_HOME/bin $path_prepend )
+fi
+
 # Android SDK
 if [[ -d $HOME/Library/Android/sdk ]]; then
     export ANDROID_HOME=$HOME/Library/Android/sdk
