@@ -32,6 +32,9 @@ vim/bundle/*
 vim/plugged/*
 /.idea/
 
-# Claude / AI dev tools (local-only, never commit)
+# Claude / AI dev tools — commit shared project config (settings.json, skills/,
+# commands/, agents/); ignore only local/runtime files
 CLAUDE.local.md
-.claude/
+.claude/settings.local.json
+.claude/worktrees/
+.claude/*.lock
