@@ -150,6 +150,11 @@ export path_append
 # use nvim
 export VISUAL=$(command -v nvim || command -v vim || command -v vi)
 
+# chrome-devtools-mcp: skip usage-stats telemetry. Its watchdog process POSTs
+# a shutdown event (up to 30s timeout) before exiting on every MCP server
+# stop, adding real delay when closing a Claude Code session.
+export CHROME_DEVTOOLS_MCP_NO_USAGE_STATISTICS=1
+
 if [ -f "$HOME/.cargo/env" ]; then
     . "$HOME/.cargo/env"
 fi
